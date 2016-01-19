@@ -1,0 +1,44 @@
+<html>
+
+  <head>
+    <base href="/">
+    <title>Nerd Night</title>
+
+    <!-- 1. Load libraries -->
+    <script src="lib/angular2-polyfills.js"></script>
+    <script src="lib/system.src.js"></script>
+    <script src="lib/Rx.js"></script>
+    <script src="lib/angular2.dev.js"></script>
+    <script src="lib/router.dev.js"></script>
+    <script src="lib/http.dev.js"></script>
+    <script src="lib/socket.io.js"></script>
+    <script>
+      //var socket = io('http://localhost:3000');
+      // socket.on('connects', function (data) {
+      //   console.log(data);
+      //   socket.emit('my other event', { my: 'data' });
+      // });
+    </script>
+
+    <!-- 2. Configure SystemJS -->
+    <script>
+      System.config({
+        packages: {        
+          app: {
+            format: 'register',
+            defaultExtension: 'js'
+          }
+        }
+      });
+      System.import('app/boot')
+            .then(null, console.error.bind(console));
+    </script>
+
+  </head>
+
+  <!-- 3. Display the application -->
+  <body>
+    <nerd-night>Loading...</nerd-night>
+  </body>
+
+</html>
