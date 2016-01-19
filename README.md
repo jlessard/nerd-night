@@ -1,5 +1,5 @@
 # Nerd Night
-Angular 2 + Express + Node + Mongo
+Angular 2 + Express + Node.js + MongoDB + Socket.io
 
 ### Development
 
