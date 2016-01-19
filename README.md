@@ -1,16 +1,19 @@
 # Nerd Night
+Angular 2 + Express + Node + Mongo
 
 ### Development
 
 ```sh
 $ git clone git@github.com:jlessard/nerd-night.git nerd-night
 $ cd nerd-night
-$ sudo npm install gulp -g
+$ npm install gulp -g
 $ npm install
 $ gulp
+http://localhost:3000
 ```
+
 ### Live Reload
-Chrome Browser Extension:
+Install Chrome Browser Extension:
 https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei
 
 ### App Structure
