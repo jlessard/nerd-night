@@ -5,7 +5,7 @@
 ```sh
 $ git clone git@github.com:jlessard/nerd-night.git nerd-night
 $ cd nerd-night
-$ npm install gulp -g
+$ sudo npm install gulp -g
 $ npm install
 $ gulp
 ```
