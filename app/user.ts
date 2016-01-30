@@ -1,7 +1,11 @@
+import {Injectable} from 'angular2/core';
+import {randString} from './utils';
+import {RoomService} from './room/room.service'
+
+@Injectable()
 export class User {
   user = { id: '', name: '' };
-
-  constructor() {
+  constructor(private _roomService:RoomService) {
       this.user.id = localStorage.getItem('user.id');
       this.user.name = localStorage.getItem('user.name');
 
@@ -14,7 +18,7 @@ export class User {
     };
 
     if (!this.user.name) {
-        this.user.name = 'guest';
+        this.user.name = 'guest' + randString(2);
         localStorage.setItem('user.name', this.user.name);
     };
 
@@ -22,5 +26,10 @@ export class User {
 
   getUser(){
     return this.user;
+  }
+
+  updateUser(property, value){
+    this.user[property] = value;
+    localStorage.setItem('user.'+property, value);
   }
 }

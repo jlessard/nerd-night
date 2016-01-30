@@ -6,6 +6,10 @@ io.on('connection', function (socket) {
 		socket.join('room'+data.key);
 	});
 
+	socket.on('disconnect', function(data) {
+
+	})
+
 });
 
 module.exports = io;

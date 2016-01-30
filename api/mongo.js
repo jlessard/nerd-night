@@ -71,6 +71,24 @@ module.exports = function(){
 			return deferred.promise;
 		},
 
+		push: function(collection, obj, updateObj){
+			var deferred = Q.defer();
+
+			if(!obj) obj = {};
+
+			console.log('pushing', collection, obj, updateObj);
+			connect().then(function(db){
+				db.collection(collection).updateOne(obj, { $push: updateObj }, { upsert: true }, function(err, result){
+					db.close();
+					console.log('err', err);
+					if(err) deferred.reject(err);
+					else deferred.resolve(result);
+				});
+			});
+
+			return deferred.promise;
+		}
+
 		// subscribe: function(collection, io, messageType){
 		// 	var deferred = Q.defer();
 

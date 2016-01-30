@@ -1,15 +1,15 @@
 var express = require('express'),
 		utils = require('./utils'),
 		mongo = require('./mongo'),
-		io = require('./socket');
+		io = require('./socket'),
+		_ = require('lodash');
 
 /*
 
-~~~~ /api/r ~~~~
+~~~~ /api/rooms ~~~~
 
 room: {
-	_id
-	key: 'A9'
+	key: 'A9' // INDEX
 	users: []
 	created_at
 }
@@ -19,21 +19,20 @@ room: {
 var router = express.Router();
 
 router.get('', getRoom);
+router.post('/user', joinRoom);
 router.post('', createRoom);
+router.put('/user', updateUser);
 router.put('', updateRoom);
 router.delete('', deleteRoom);
 
 function getRoom(req, res, next) {
-	var key = req.query.key,
-			user_id = req.query.user_id;
+	var key = req.query.key;
 
 	mongo().find('rooms', { key: req.query.key })
 	.then(function(result){
 		var room = result[0];
 		// if user is not already in room, join room and announce join
-		console.log('rom.users',room.users);
-		if(!room.users) room.users = [];
-		if(room.users.indexOf(user_id) == -1) joinRoom(room, user_id);
+		console.log('room.users',room.users);
 		return res.json(room);
 	});
 }
@@ -42,6 +41,7 @@ function createRoom(req, res, next) {
 	var key = utils.randString(2),
 			room = {
 				key: key,
+				users: [],
 				created_at: new Date().toJSON()
 			};
 
@@ -56,9 +56,10 @@ function updateRoom(req, res, next) {
 	var room = req.body.room;
 	console.log('updating room', room);
 
-	mongo().update('rooms', { _id: room._id }, room)
+	mongo().update('rooms', { key: room.key }, room)
 	.then(function(update){
 		console.log('room updated');
+		io.to('room'+room.key).emit('room', { room: room });
 	});
 }
 
@@ -66,15 +67,48 @@ function deleteRoom(req, res, next) {
 
 }
 
-// ~~~~ HELPERS ~~~~
-
 // add user to users array and notify room
-function joinRoom(room, user_id) {
-	room.users.push(user_id);
-	mongo().update('rooms', { _id: room._id }, { users: room.users })
-	.then(function(){
-		console.log('join room', room.key, room);
-		io.to('room'+room.key).emit('room', { msg: 'A new user has joined this room!', room: room });
+function joinRoom(req, res, next) {
+	var user = req.body.user,
+			room = req.body.room,
+			dbRoom;
+
+	mongo().find('rooms', {  key: room.key })
+	.then(function(result){
+		dbRoom = result[0];
+		dbRoom.users.push(user);
+		return mongo().update('rooms', { key: room.key }, { users: dbRoom.users });
+	})
+	.then(function(update){
+		io.to('room'+room.key).emit('room', { msg: 'A new user has joined this room!', room: dbRoom });
+	})
+	.fail(function(err){
+		console.log('join room error', err);
+	});
+}
+
+function updateUser(req, res, next) {
+	var user = req.body.user,
+			room = req.body.room,
+			dbRoom, dbUser;
+
+	console.log('update user', user, room);
+
+	mongo().find('rooms', { key: room.key })
+	.then(function(result){
+		dbRoom = result[0];
+		console.log('before update', dbRoom.users);
+		dbUserIndex = _.findIndex(dbRoom.users, { id: user.id });
+		console.log('index', dbUserIndex);
+		dbRoom.users[dbUserIndex] = user;
+		console.log('after update', dbRoom.users);
+		return mongo().update('rooms', { key: room.key }, { users: dbRoom.users });
+	})
+	.then(function(update){
+		io.to('room'+room.key).emit('room', { room: dbRoom });
+	})
+	.fail(function(err){
+		console.log('join room error', err);
 	});
 }
 

@@ -1,6 +1,18 @@
 <h1>Room {{room.key}}</h1>
 
+<form>
+<label for="name">Nickname</label>
+<input type="text" id="name" [(ngModel)]="user.name" (change)="onNameChange()" />
+</form>
+
 <h2>Users</h2>
 <ul>
-	<li *ngFor="#user of room.users; #i = index">{{user}}</li>
+	<li *ngFor="#roomUser of room.users; #i = index">
+		<span *ngIf="roomUser.id == user.id">
+			{{user.name}}
+		</span>
+		<span *ngIf="roomUser.id != user.id">
+			{{roomUser.name}}
+		</span>
+	</li>
 </ul>

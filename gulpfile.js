@@ -27,6 +27,7 @@ gulp.task('copy:libs', ['clean'], function() {
       'node_modules/rxjs/bundles/Rx.js',
       'node_modules/angular2/bundles/angular2.dev.js',
       'node_modules/angular2/bundles/router.dev.js',
+      'node_modules/lodash/lodash.js',
       'assets/js/**/*.js'
     ])
     .pipe(gulp.dest('dist/lib'))
@@ -60,6 +61,9 @@ gulp.task('serve', ['watch'], function() {
   //use gulp.watch to trigger server actions(notify, start or stop) 
   gulp.watch(['dist/**/*.html', 'dist/**/*.js', 'dist/**/*.css'], function (file) {
     //console.log('notify apply server');
+    server.notify.apply(server, [file]);
+  });
+  gulp.watch(['app.js', 'api/**/*.js'], function(file){
     server.notify.apply(server, [file]);
   });
 });
